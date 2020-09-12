@@ -1,0 +1,19 @@
+local Utils = require "main.frameworck.utils.Utils"
+
+function init(self)
+	self.enable = true;
+end
+
+function update(self, dt)
+	if self.enable then
+		Utils.update(dt)
+	end
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("disable") then
+		self.enable = false;
+	elseif message_id == hash("enable") then
+		self.enable = true;
+	end
+end
