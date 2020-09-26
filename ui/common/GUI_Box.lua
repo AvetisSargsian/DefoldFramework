@@ -2,10 +2,9 @@ local GUI_Box = {}
 GUI_Box.TOUCH = hash("touch");
 
 local function init_instance(gui_box, node_name)
-		local node = gui.get_node(node_name);
-		gui_box.node = node;
-		gui_box.screen_position = gui.get_screen_position(node);
-		gui_box.size = gui.get_size(node);
+	gui_box.node = gui.get_node(node_name);
+	gui_box.id = gui.get_id(gui_box.node);
+	gui_box.size = gui.get_size(gui_box.node);
 end
 
 function GUI_Box.clone_node(orogin_node, new_id)
@@ -31,9 +30,14 @@ function GUI_Box.new(node_name)
 		init_instance(this, node_name);
 	end
 
+	function this.get_id()
+		return this.id;
+	end
+
 	function this.set_node(new_node)
 		this.node = new_node;
-		this.size = gui.get_size(new_node);
+		this.id = gui.get_id(this.node);
+		this.size = gui.get_size(this.node);
 	end
 
 	function this.get_position()
@@ -42,7 +46,6 @@ function GUI_Box.new(node_name)
 
 	function this.set_position(new_pos)
 		gui.set_position(this.node, new_pos);
-		this.screen_position = gui.get_screen_position(this.node);
 	end
 
 	function this.set_alpha(value)

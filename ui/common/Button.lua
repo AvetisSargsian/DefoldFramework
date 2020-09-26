@@ -7,6 +7,13 @@ local Button = {};
 -- GUI_Box.__index = GUI_Box
 local sound_go = "main:/sounds#";
 
+function Button.on_input(store, action_id, action)
+	for _, btn in pairs(store) do
+		btn.on_input(action_id, action);
+	end
+end
+	
+
 function Button.new(node_name, layout_settings, callback)
 	
 	local super = GUI_Box.new(node_name);
@@ -15,8 +22,6 @@ function Button.new(node_name, layout_settings, callback)
 	--inheritance
 	setmetatable(this, super);
 	super.__index = super;
-	
-	this.id = gui.get_id(this.node);
 
 	local settings = layout_settings[this.id];
 	
