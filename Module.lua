@@ -44,4 +44,11 @@ function Module.new()
 	return this;
 end
 
+setmetatable(Module, {
+	-- this method used when table used as function
+	__call = function(t, ...)
+		return Module.new(...)
+	end
+})
+
 return Module;
