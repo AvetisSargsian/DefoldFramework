@@ -1,5 +1,5 @@
-local Button 		= require "main.frameworck.ui.common.Button"
-local GUI_Box 		= require "main.frameworck.ui.common.GUI_Box"
+local Button 	= require "main.frameworck.ui.common.Button"
+local GUI_Box 	= require "main.frameworck.ui.common.GUI_Box"
 
 local Popup = {};
 
@@ -12,22 +12,25 @@ function Popup.new(node_name, show_position, hide_position)
 	--inheritance
 	setmetatable(this, super);
 	super.__index = super;
+	--
 
-	this.id = gui.get_id(this.node);
 	this.set_enabled(false);
 
-	function this.show()
+	function this.show(callback)
 		if is_visible then return end
 		is_visible = true,
 		this.set_enabled(true);
-		this.animate("position", show_position, gui.EASING_OUTBACK, 0.5);
+		this.animate("position", show_position, gui.EASING_OUTBACK, 0.5, 0, function()
+			if callback then callback(this); end
+		end);
 	end
 
-	function this.hide()
+	function this.hide(callback)
 		if not is_visible then return end
 		this.animate("position", hide_position, gui.EASING_INOUTBACK, 0.5, 0, function() 
 			this.set_enabled(false);
 			is_visible = false;
+			if callback then callback(this); end
 		end);
 	end
 

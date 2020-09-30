@@ -7,6 +7,7 @@ local function init_instance(gui_box, node_name)
 	gui_box.size = gui.get_size(gui_box.node);
 end
 
+
 function GUI_Box.clone_node(orogin_node, new_id)
 	local node_clone = gui.clone(orogin_node);
 	gui.set_id(node_clone, new_id);
@@ -42,6 +43,10 @@ function GUI_Box.new(node_name)
 
 	function this.get_position()
 		return gui.get_position(this.node);
+	end
+
+	function this.get_screen_position()
+		return gui.get_screen_position(this.node);
 	end
 
 	function this.set_position(new_pos)
