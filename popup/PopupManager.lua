@@ -1,6 +1,7 @@
 local PopupManager = {}
-local popups_factorys = {}
-local open_popups = {}
+
+local popups_factorys = {};
+local open_popups = {};
 
 function PopupManager.register_popup(id, factory)
 	popups_factorys[id] = factory;
@@ -28,6 +29,11 @@ function PopupManager.is_open(id)
 	else
 		return false;
 	end
+end
+
+function PopupManager.clear_registry()
+	popups_factorys = {};
+	open_popups = {};
 end
 
 return PopupManager;
