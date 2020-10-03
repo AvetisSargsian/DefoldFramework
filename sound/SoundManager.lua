@@ -39,8 +39,17 @@ function SoundManager.play_sound(sound_name, prop, callback)
 	return id;
 end
 
+function SoundManager.pause_sound(sound_name)
+	sound.pause(sound_name, true);
+end
+
+function SoundManager.resume_sound(sound_name)
+	sound.pause(sound_name, false);
+end
+
 function SoundManager.stop_sound(sound_name)
 	sound.stop(sound_name)
+	
 end
 
 return SoundManager;
