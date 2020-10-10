@@ -10,7 +10,7 @@ function Module.new()
 		if actions[id] then
 			if type(actions[id]) == "table" then
 				for _, command in ipairs(actions[id]) do 
-					if not command(this, message) then break end
+					if not command(this, message) then break; end
 				end
 			elseif type(actions[id]) == "function" then
 				actions[id](this, message)
