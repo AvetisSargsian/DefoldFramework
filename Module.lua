@@ -1,23 +1,50 @@
 local Module = {}
 
+Module.SELECTOR = "selector";
+Module.SEQUENCE = "sequence";
+
 function Module.new()
 	local this = {};
 	local actions = {};
 	local commands ={};
 	local models = {};
 
-	function this.on_message(id, message)
-		if actions[id] then
-			if type(actions[id]) == "table" then
-				for _, command in ipairs(actions[id]) do 
-					if not command(this, message) then break; end
-				end
-			elseif type(actions[id]) == "function" then
-				actions[id](this, message)
+	local runAction;
+
+	local function runSequence(actions, message)
+		for _, action in ipairs(actions) do 
+			if not runAction(action, message) then 
+				return false 
 			end
-		else
-			print("MESSAGE ".. id .. " NOT REGISTERED")
 		end
+		return true;
+	end
+
+	local function runSelector(actions, message)
+		for _, action in ipairs(actions) do 
+			runAction(action, message)
+		end
+		return true;
+	end
+
+	runAction = function (action, message)
+		if not action then
+			print("MESSAGE " .. action .. " NOT REGISTERED")
+			return false;
+		end
+		if type(action) == "table" then
+			if action.type == Module.SELECTOR then
+				return runSelector(action, message);
+			elseif action.type == Module.SEQUENCE then
+				return runSequence(action, message);
+			end
+		elseif type(action) == "function" then
+			return action(this, message);
+		end
+	end
+
+	function this.on_message(id, message)
+		runAction(actions[id], message);
 	end
 
 	function this.bind_action(message_id, action)
