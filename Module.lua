@@ -2,6 +2,7 @@ local Module = {}
 
 Module.SELECTOR = "selector";
 Module.SEQUENCE = "sequence";
+Module.CONDITION = "condition";
 
 function Module.new()
 	local this = {};
@@ -27,9 +28,17 @@ function Module.new()
 		return true;
 	end
 
+	local function runCondition(actions, message)
+		if runAction(actions.condition, message) then
+			return runAction(actions.success, message);
+		else
+			return runAction(actions.fail, message);
+		end
+	end
+
 	runAction = function (action, message)
 		if not action then
-			print("MESSAGE " .. action .. " NOT REGISTERED")
+			print("MESSAGE: " .. " NO ACTION")
 			return false;
 		end
 		if type(action) == "table" then
@@ -37,6 +46,8 @@ function Module.new()
 				return runSelector(action, message);
 			elseif action.type == Module.SEQUENCE then
 				return runSequence(action, message);
+			elseif action.type == Module.CONDITION then
+				return runCondition(action, message)
 			end
 		elseif type(action) == "function" then
 			return action(this, message);
