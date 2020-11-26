@@ -50,6 +50,10 @@ local function window_callback(self, event, data)
 	end
 end
 
+function GameWindowManager.get_display_dimension()
+	return { width = screenW, height = screenH };
+end
+
 function GameWindowManager.get_offset()
 	return { x = xoffset, y = yoffset };
 end
