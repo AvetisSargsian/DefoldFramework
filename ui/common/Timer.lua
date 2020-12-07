@@ -16,15 +16,13 @@ function Timer.new(node)
 		if this.node then 
 			local min_str = minutes > 9 and tostring(minutes) or "0" .. minutes;
 			local sec_str = seconds > 9 and tostring(seconds) or "0" .. seconds;
-			gui.set_text(this.node, min_str .. ":" .. sec_str);
+			
+			gui.set_text(this.node, hours .. ":" .. min_str .. ":" .. sec_str);
 		end
 	end
 
 	function this.enterFrame(dt)
 		if not isRunning then return; end
-		
-		-- start_time = start_time + dt
-		-- local timePassed = start_time;
 		
 		local timePassed = os.time() - start_time;
 		seconds = math.floor(timePassed % 60);
@@ -48,7 +46,6 @@ function Timer.new(node)
 
 	function this.start(self)
 		isRunning = true;
-		start_time = 0;
 		start_time = os.time();
 	end
 
