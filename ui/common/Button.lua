@@ -25,15 +25,22 @@ function Button.new(node_name, layout_settings, callback)
 
 	local settings = layout_settings[this.id];
 	
-	local up_state = settings.up_state or gui.get_flipbook(this.node);
+	local duration = settings.animation_duration;
+	local up_state = settings.up_state; --or gui.get_flipbook(this.node);
+	local up_scale = settings.up_scale;
+	local up_color = settings.up_color;
 	local down_state = settings.down_state;
 	local hover_state = settings.hover_state;
+	local hover_color = settings.hover_color;
+	local hover_scale = settings.hover_scale;
+	local pressed_color = settings.pressed_color;
+	local pressed_scale = settings.pressed_scale;
 	
-	local pressed_scale_value = settings.pressed_scale or 0.85;
-	local released_scale_value = settings.released_scale or 1;
+	--local pressed_scale_value = settings.pressed_scale or 0.85;
+	--local released_scale_value = settings.released_scale or 1;
 	
-	local pressed_scale = vmath.vector3(pressed_scale_value, pressed_scale_value, 0);
-	local released_scale = vmath.vector3(released_scale_value, released_scale_value, 0);
+	--local pressed_scale = vmath.vector3(pressed_scale_value, pressed_scale_value, 0);
+	--local released_scale = vmath.vector3(released_scale_value, released_scale_value, 0);
 	local _callback = callback;
 	local click_sound = nil;
 	if settings.sound then
@@ -54,29 +61,54 @@ function Button.new(node_name, layout_settings, callback)
 	local function setOverAnim()
 		if hover_state and _state ~= hover_state then
 			gui.play_flipbook(this.node, hover_state);
-			_state = hover_state;
-			_is_over = true;
 		end
+		
+		if hover_color then
+			this.animate("color", hover_color, gui.EASING_LINEAR, duration);
+		end
+		
+		if hover_scale then
+			this.animate("scale", hover_scale, gui.EASING_OUTBACK, duration);
+		end
+		
+		_is_over = true;
+		_state = hover_state;
 	end
 
 	local function setPressedAnim()
 		if down_state and _state ~= down_state then
 			gui.play_flipbook(this.node, down_state);
-			_state = down_state
 		end
-		gui.set_scale(this.node, pressed_scale);
+
+		if pressed_scale then
+			this.animate("scale", pressed_scale, gui.EASING_OUTBACK, duration);
+		end
+		
+		if pressed_color then
+			this.animate("color", pressed_color, gui.EASING_LINEAR, duration);
+		end
+		
 		play_sound();
 		_pressed = true;
+		_state = down_state;
 	end
 
 	local function setReleasedAnim()
 		if up_state and _state ~= up_state then
 			gui.play_flipbook(this.node, up_state);
-			_state = up_state;
 		end
-		gui.set_scale(this.node, released_scale);
+
+		if up_color then
+			this.animate("color", up_color, gui.EASING_LINEAR, duration);
+		end
+
+		if up_scale then
+			this.animate("scale", up_scale, gui.EASING_OUTBACK, duration);
+		end
+		
 		_pressed = false;
 		_is_over = false;
+		_state = up_state;
 	end
 
 	function this.set_callback(cb)

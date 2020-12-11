@@ -88,6 +88,7 @@ function GUI_Box.new(node_name)
 
 	function this.animate(property, to, easing, duration, delay, complete_function, playback)
 		delay = delay or 0;
+		duration = duration or 0;
 		gui.animate(this.node, property, to, easing, duration, delay, complete_function, playback)
 	end
 
