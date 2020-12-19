@@ -18,7 +18,7 @@ function Switch.new(node_name, button1, button2, callback)
 	this.button1 = button1;
 	this.button2 = button2
 
-	local function button_callback()
+	local function switch_state()
 		if _state == States.STATE_1 then 
 			_state = States.STATE_2;
 			this.button2.set_enabled(true);
@@ -28,7 +28,15 @@ function Switch.new(node_name, button1, button2, callback)
 			this.button2.set_enabled(false);
 			this.button1.set_enabled(true);
 		end
+	end
+
+	local function button_callback()
+		switch_state();
 		if _callback then _callback(this); end
+	end
+
+	function this.toggle_state()
+		switch_state();
 	end
 
 	function this.on_input(action_id, action)
