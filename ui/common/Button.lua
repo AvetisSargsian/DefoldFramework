@@ -26,6 +26,7 @@ function Button.new(node_name, layout_settings, callback)
 	local settings = layout_settings[this.id];
 	
 	local duration = settings.animation_duration;
+	local easing_function_scale = settings.easing_function_scale;
 	local up_state = settings.up_state; --or gui.get_flipbook(this.node);
 	local up_scale = settings.up_scale;
 	local up_color = settings.up_color;
@@ -68,7 +69,7 @@ function Button.new(node_name, layout_settings, callback)
 		end
 		
 		if hover_scale then
-			this.animate("scale", hover_scale, gui.EASING_OUTBACK, duration);
+			this.animate("scale", hover_scale, easing_function_scale, duration);
 		end
 		
 		_is_over = true;
@@ -81,7 +82,7 @@ function Button.new(node_name, layout_settings, callback)
 		end
 
 		if pressed_scale then
-			this.animate("scale", pressed_scale, gui.EASING_OUTBACK, duration);
+			this.animate("scale", pressed_scale, easing_function_scale, duration);
 		end
 		
 		if pressed_color then
@@ -103,7 +104,7 @@ function Button.new(node_name, layout_settings, callback)
 		end
 
 		if up_scale then
-			this.animate("scale", up_scale, gui.EASING_OUTBACK, duration);
+			this.animate("scale", up_scale, easing_function_scale, duration);
 		end
 		
 		_pressed = false;

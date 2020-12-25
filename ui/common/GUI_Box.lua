@@ -92,6 +92,10 @@ function GUI_Box.new(node_name)
 		gui.animate(this.node, property, to, easing, duration, delay, complete_function, playback)
 	end
 
+	function this.delete()
+		gui.delete_node(this.node)
+	end
+
 	function this.on_input(action_id, action)
 	end
 
