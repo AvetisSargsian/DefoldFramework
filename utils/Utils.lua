@@ -17,8 +17,10 @@ end
 
 function Utils.pouse_coroutine(time, data)
     local co = coroutine.running();
-    if co then 
-        Utils.set_time_out(time, coroutine.resume, co);
+    if co then
+        if time > -1 then
+            Utils.set_time_out(time, coroutine.resume, co);
+        end
         coroutine.yield(data);
     end
 end

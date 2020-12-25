@@ -9,6 +9,7 @@ function Module.new()
 	local actions = {};
 	local commands ={};
 	local models = {};
+	local coroutines = {};
 
 	local runAction;
 
@@ -36,26 +37,37 @@ function Module.new()
 		end
 	end
 
-	runAction = function (action, message)
+	runAction = function (action, message, id)
 		if not action then
-			print("MESSAGE: " .. " NO ACTION")
+			print("MESSAGE: " .. " NO BRANCH")
 			return false;
 		end
+		local result;
 		if type(action) == "table" then
 			if action.type == Module.SELECTOR then
-				return runSelector(action, message);
+				result = runSelector(action, message);
 			elseif action.type == Module.SEQUENCE then
-				return runSequence(action, message);
+				result = runSequence(action, message);
 			elseif action.type == Module.CONDITION then
-				return runCondition(action, message)
+				result = runCondition(action, message)
 			end
 		elseif type(action) == "function" then
-			return action(this, message);
+			result = action(this, message);
 		end
+
+		if id and coroutines[id] then
+			print("module coroutine:: stop branch " .. id)
+			coroutines[id] = nil 
+		end
+		return result;
 	end
 
 	function this.on_message(id, message)
-		runAction(actions[id], message);
+		local co = coroutine.create(runAction);
+		coroutines[id] = co;
+		print("module coroutine:: start branch - " .. id)
+		coroutine.resume(co, actions[id], message, id);
+		-- runAction(actions[id], message);
 	end
 
 	function this.bind_action(message_id, action)
