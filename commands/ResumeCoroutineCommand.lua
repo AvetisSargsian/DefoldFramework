@@ -3,8 +3,9 @@ local function ResumeCoroutineCommand(module, data, thread_id)
 	local co = module.get_coroutine(data.thread_id);
 	if co then 
 		assert(coroutine.resume(co));
+		return true;
 	end
-	return true;
+	return false;
 end
 
 return ResumeCoroutineCommand
