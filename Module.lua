@@ -1,8 +1,20 @@
+local ResumeCoroutineCommand = require "main.frameworck.commands.ResumeCoroutineCommand"
+
 local Module = {}
 
 Module.SELECTOR = "selector";
 Module.SEQUENCE = "sequence";
 Module.CONDITION = "condition";
+
+local function init_id_producer(start_value)
+	local id = start_value or 0;	
+	return function()
+		id = id + 1;
+		return id;
+	end
+end
+
+local UNIQUE_ID = init_id_producer();
 
 function Module.new()
 	local this = {};
@@ -13,61 +25,70 @@ function Module.new()
 
 	local runAction;
 
-	local function runSequence(actions, message)
+	local function runSequence(actions, message, thread_id)
 		for _, action in ipairs(actions) do 
-			if not runAction(action, message) then 
+			if not runAction(action, message, thread_id) then 
 				return false 
 			end
 		end
 		return true;
 	end
 
-	local function runSelector(actions, message)
+	local function runSelector(actions, message, thread_id)
 		for _, action in ipairs(actions) do 
-			runAction(action, message)
+			runAction(action, message, thread_id)
 		end
 		return true;
 	end
 
-	local function runCondition(actions, message)
-		if runAction(actions.condition, message) then
-			return runAction(actions.success, message);
+	local function runCondition(actions, message, thread_id)
+		if runAction(actions.condition, message, thread_id) then
+			return runAction(actions.success, message, thread_id);
 		else
-			return runAction(actions.fail, message);
+			return runAction(actions.fail, message, thread_id);
 		end
 	end
 
-	runAction = function (action, message, id)
+	local function create_coroutine(id, message)
+		local thread_id = UNIQUE_ID();
+		local co = coroutine.create( function () 
+			print("module coroutine:: start branch - " .. id);
+			runAction(actions[id], message, thread_id);
+
+			if coroutines[thread_id] then
+				print("module coroutine:: stop branch " .. id)
+				coroutines[thread_id] = nil;
+			end
+		end);
+		coroutines[thread_id] = co;
+		return co;
+	end
+
+	local function start_coroutine(co)
+		assert(coroutine.resume(co));
+	end
+
+	runAction = function (action, message, thread_id)
 		if not action then
 			print("MESSAGE: " .. " NO BRANCH")
 			return false;
 		end
-		local result;
 		if type(action) == "table" then
 			if action.type == Module.SELECTOR then
-				result = runSelector(action, message);
+				return runSelector(action, message, thread_id);
 			elseif action.type == Module.SEQUENCE then
-				result = runSequence(action, message);
+				return runSequence(action, message, thread_id);
 			elseif action.type == Module.CONDITION then
-				result = runCondition(action, message)
+				return runCondition(action, message, thread_id)
 			end
 		elseif type(action) == "function" then
-			result = action(this, message);
+			return action(this, message, thread_id);
 		end
-
-		if id and coroutines[id] then
-			print("module coroutine:: stop branch " .. id)
-			coroutines[id] = nil 
-		end
-		return result;
 	end
 
 	function this.on_message(id, message)
-		local co = coroutine.create(runAction);
-		coroutines[id] = co;
-		print("module coroutine:: start branch - " .. id)
-		coroutine.resume(co, actions[id], message, id);
-		-- runAction(actions[id], message);
+		local co = create_coroutine(id, message);
+		start_coroutine(co);
 	end
 
 	function this.bind_action(message_id, action)
@@ -90,6 +111,12 @@ function Module.new()
 	function this.get_model(id)
 		return models[id];
 	end
+
+	function this.get_coroutine(id)
+		return coroutines[id]
+	end
+
+	this.bind_action(hash("resume_thread"), ResumeCoroutineCommand)
 	
 	return this;
 end
