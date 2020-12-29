@@ -52,11 +52,11 @@ function Module.new()
 	local function create_coroutine(id, message)
 		local thread_id = UNIQUE_ID();
 		local co = coroutine.create( function () 
-			print("module coroutine:: start branch - " .. id);
+			-- print("module coroutine:: start branch - " .. id);
 			runAction(actions[id], message, thread_id);
 
 			if coroutines[thread_id] then
-				print("module coroutine:: stop branch " .. id)
+				-- print("module coroutine:: stop branch " .. id)
 				coroutines[thread_id] = nil;
 			end
 		end);
