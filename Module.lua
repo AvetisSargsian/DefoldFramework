@@ -3,9 +3,9 @@ local TreeBehaviourManager = require "main.frameworck.TreeBehaviourManager"
 
 local Module = {}
 
-Module.SELECTOR = "selector";
-Module.SEQUENCE = "sequence";
-Module.CONDITION = "condition";
+Module.SELECTOR = TreeBehaviourManager.SELECTOR;
+Module.SEQUENCE = TreeBehaviourManager.SEQUENCE;
+Module.CONDITION = TreeBehaviourManager.CONDITION;
 
 local function init_id_producer(start_value)
 	local id = start_value or 0;	
@@ -30,7 +30,6 @@ function Module.new()
 		local co = coroutine.create( function () 
 			print("module coroutine:: start branch - " .. id);
 			command_runner.run(actions[id], message, thread_id)
-
 			if coroutines[thread_id] then
 				print("module coroutine:: stop branch " .. id)
 				coroutines[thread_id] = nil;
