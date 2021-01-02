@@ -1,4 +1,5 @@
 local ResumeCoroutineCommand = require "main.frameworck.commands.ResumeCoroutineCommand"
+local TreeBehaviourManager = require "main.frameworck.TreeBehaviourManager"
 
 local Module = {}
 
@@ -22,38 +23,13 @@ function Module.new()
 	local commands ={};
 	local models = {};
 	local coroutines = {};
-
-	local runAction;
-
-	local function runSequence(actions, message, thread_id)
-		for _, action in ipairs(actions) do 
-			if not runAction(action, message, thread_id) then 
-				return false 
-			end
-		end
-		return true;
-	end
-
-	local function runSelector(actions, message, thread_id)
-		for _, action in ipairs(actions) do 
-			runAction(action, message, thread_id)
-		end
-		return true;
-	end
-
-	local function runCondition(actions, message, thread_id)
-		if runAction(actions.condition, message, thread_id) then
-			return runAction(actions.success, message, thread_id);
-		else
-			return runAction(actions.fail, message, thread_id);
-		end
-	end
-
+	local command_runner = TreeBehaviourManager.new(this);
+	
 	local function create_coroutine(id, message)
 		local thread_id = UNIQUE_ID();
 		local co = coroutine.create( function () 
 			print("module coroutine:: start branch - " .. id);
-			runAction(actions[id], message, thread_id);
+			command_runner.run(actions[id], message, thread_id)
 
 			if coroutines[thread_id] then
 				print("module coroutine:: stop branch " .. id)
@@ -66,24 +42,6 @@ function Module.new()
 
 	local function start_coroutine(co)
 		assert(coroutine.resume(co));
-	end
-
-	runAction = function (action, message, thread_id)
-		if not action then
-			print("MESSAGE: " .. " NO BRANCH")
-			return false;
-		end
-		if type(action) == "table" then
-			if action.type == Module.SELECTOR then
-				return runSelector(action, message, thread_id);
-			elseif action.type == Module.SEQUENCE then
-				return runSequence(action, message, thread_id);
-			elseif action.type == Module.CONDITION then
-				return runCondition(action, message, thread_id)
-			end
-		elseif type(action) == "function" then
-			return action(this, message, thread_id);
-		end
 	end
 
 	function this.on_message(id, message)
