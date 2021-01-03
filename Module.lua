@@ -44,7 +44,7 @@ function Module.new()
 	end
 
 	function this.on_message(id, message)
-		if message.coroutine then 
+		if message and message.coroutine then 
 			local co = create_coroutine(id, message);
 			start_coroutine(co);
 		else
