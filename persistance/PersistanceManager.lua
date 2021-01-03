@@ -13,6 +13,7 @@ end
 
 function PersistanceManager.save(leveData)
 	local my_file_path = sys.get_save_file(GAME_NAME, GAME_FILE)
+	pprint("SAVE PATH - ", my_file_path)
 	if not sys.save(my_file_path, leveData) then
 		print("Can't save data");
 	end
