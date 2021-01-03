@@ -1,5 +1,5 @@
 local function ResumeCoroutineCommand(module, data, thread_id)
-	print('ResumeCoroutineCommand')
+	print('--ResumeCoroutineCommand')
 	local co = module.get_coroutine(data.thread_id);
 	if co then 
 		assert(coroutine.resume(co));
