@@ -111,7 +111,7 @@ function Button.new(node_name, layout_settings, callback)
 		_state = up_state;
 	end
 
-	function this.set_enabled(value)
+	function this.set_input_enabled(value)
 		_enabled = value;
 	end
 
