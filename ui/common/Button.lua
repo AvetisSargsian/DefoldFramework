@@ -12,7 +12,6 @@ function Button.on_input(store, action_id, action)
 		btn.on_input(action_id, action);
 	end
 end
-	
 
 function Button.new(node_name, layout_settings, callback)
 	
@@ -112,6 +111,10 @@ function Button.new(node_name, layout_settings, callback)
 		_state = up_state;
 	end
 
+	function this.set_enabled(value)
+		_enabled = value;
+	end
+
 	function this.set_callback(cb)
 		_callback = cb;
 	end
@@ -121,6 +124,7 @@ function Button.new(node_name, layout_settings, callback)
 	end
 	
 	function this.on_input(action_id, action)
+		if not _enabled then return end
 		local over = gui.pick_node(this.node, action.x, action.y);
 		if action_id == GUI_Box.TOUCH then
 			if not this.is_enabled() then return end
