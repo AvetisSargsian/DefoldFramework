@@ -7,7 +7,6 @@ local function init_instance(gui_box, node_name)
 	gui_box.size = gui.get_size(gui_box.node);
 end
 
-
 function GUI_Box.clone_node(orogin_node, new_id)
 	local node_clone = gui.clone(orogin_node);
 	gui.set_id(node_clone, new_id);
@@ -21,7 +20,8 @@ function GUI_Box.clone_box(orogin_box, new_id)
 end
 
 function GUI_Box.new(node_name)
-	local this = {}
+	local this = {};
+	local children = {};
 
 	-- if uncomment, table - "this" will inherit method "GUI_Box.new()"  and will be able to create new instances
 	-- setmetatable(this, GUI_Box);
@@ -39,6 +39,10 @@ function GUI_Box.new(node_name)
 		this.node = new_node;
 		this.id = gui.get_id(this.node);
 		this.size = gui.get_size(this.node);
+	end
+
+	function this.delete()
+		gui.delete_node(this.node)
 	end
 
 	function this.get_position()
@@ -90,10 +94,6 @@ function GUI_Box.new(node_name)
 		delay = delay or 0;
 		duration = duration or 0;
 		gui.animate(this.node, property, to, easing, duration, delay, complete_function, playback)
-	end
-
-	function this.delete()
-		gui.delete_node(this.node)
 	end
 
 	function this.on_input(action_id, action)

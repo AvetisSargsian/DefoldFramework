@@ -5,7 +5,7 @@ TreeBehaviourManager.SEQUENCE = "sequence";
 TreeBehaviourManager.CONDITION = "condition";
 
 function TreeBehaviourManager.new(module)
-	this = {}
+	local this = {}
 	local run_action;
 	
 	local function runSequence(actions, message, thread_id)
