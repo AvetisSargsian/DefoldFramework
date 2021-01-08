@@ -11,9 +11,16 @@ function Timer.new(time, callback, ...)
 	local this = {};
 
 	local _callBack = callback;
-	local _args = {...};
+	local _on_update = nil;
+	local _callBack_args = {...};
 	local _current_time = 0;
 	local _state = Timer.STATE.IDLE;
+
+	local function call_func(func, args)
+		if func and type(func) == "function" then
+			func(unpack(args));
+		end
+	end
 
 	function this.start()
 		if _state == Timer.STATE.IDLE then
@@ -48,18 +55,23 @@ function Timer.new(time, callback, ...)
 
 	function this.set_callback(cb, ...)
 		_callBack = cb;
-		_args = {...};
+		_callBack_args = {...};
+	end
+
+	function this.set_on_update(cb)
+		_on_update = cb;
 	end
 
 	function this.update(dt)
 		if dt == nil then return; end
 		if _state ~= Timer.STATE.RUNNING then return; end
 		_current_time = _current_time - dt;
+
+		if _on_update then _on_update(dt); end
+
 		if _current_time <= 0 then
 			this.stop();
-			if _callBack and type(_callBack) == "function" then
-				_callBack(unpack(_args));
-			end
+			call_func(_callBack, _callBack_args);
 		end
 	end
 
