@@ -90,6 +90,14 @@ function GUI_Box.new(node_name)
 		gui.set_id(this.node, id);
 	end
 
+	function this.set_fill_angle(value)
+		gui.set_fill_angle(this.node, value);
+	end
+
+	function this.set_text(text)
+		gui.set_text(this.node, text);
+	end
+
 	function this.animate(property, to, easing, duration, delay, complete_function, playback)
 		delay = delay or 0;
 		duration = duration or 0;
