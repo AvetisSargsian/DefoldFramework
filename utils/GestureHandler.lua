@@ -38,7 +38,11 @@ function GestureHandler.new(dx, dy)
 	function this.on_input(action_id, action)
 		local dif_x = 0;
 		local dif_y = 0;
-		if action.pressed and not touch_start then touch_start = {x = action.x, y = action.y} end
+		
+		if action.pressed and not touch_start then 
+			touch_start = {x = action.x, y = action.y} 
+		end
+		
 		if action.released and touch_start then 
 			dif_x = touch_start.x - action.x
 			dif_y = touch_start.y - action.y
@@ -54,7 +58,7 @@ function GestureHandler.new(dx, dy)
 		end
 
 		if math.abs(dif_y) >= dy  then 
-			if dif_y > 0 then
+			if dif_y < 0 then
 				run_callback(on_swap_down)
 			else
 				run_callback(on_swap_up)
