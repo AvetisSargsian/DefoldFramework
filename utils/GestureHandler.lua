@@ -12,6 +12,7 @@ function GestureHandler.new(dx, dy)
 	local on_swap_down = nil;
 	local on_swap_right = nil;
 	local on_swap_left = nil;
+	local on_touch = nil;
 
 	local touch_start
 
@@ -33,6 +34,10 @@ function GestureHandler.new(dx, dy)
 
 	function this.set_swap_left(callback)
 		on_swap_left = callback
+	end
+
+	function this.set_touch(callback)
+		on_touch = callback
 	end
 
 	function this.on_input(action_id, action)
@@ -63,6 +68,10 @@ function GestureHandler.new(dx, dy)
 			else
 				run_callback(on_swap_up)
 			end
+		end
+
+		if math.abs(dif_x) < dx and math.abs(dif_y) < dy then
+			run_callback(on_touch)
 		end
 	end
 
