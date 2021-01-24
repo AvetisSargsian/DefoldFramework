@@ -3,29 +3,43 @@ local Scroll = {};
 
 Scroll.strategies = {
 	step = function(scroll)
+		local move = function(value)
+			if value ~= 0 then
+				local current = scroll.get_current_pos();
+				current.y = scroll.calculate_new_position(move);
+				scroll.update_position(current);
+			end
+		end
 		return {
-			move = function(value)
-				if value ~= 0 then
-					local current = scroll.get_current_pos();
-					current.y = scroll.calculate_new_position(move);
-					scroll.update_position(current);
+			on_input = function (action_id, action)
+				if action_id == hash("touch") then
+					move(action.dy);
 				end
 			end
 		}
 	end,
 	animation = function(scroll, step)
 		local in_progress = false;
+		local move = function(value)
+			if in_progress then return end
+			value = value > 0 and 1 or -1;
+			in_progress = true;
+			local current_pos = scroll.get_current_pos();
+			current_pos.y = scroll.calculate_new_position(step * value);
+			scroll.container.animate("position", current_pos, gui.EASING_OUTBACK, 0.4, 0, function()
+				scroll.update_position(current);
+				in_progress = false;
+			end);
+		end
+		
 		return {
-			move = function(value)
-				if in_progress then return end
-				value = value > 0 and 1 or -1;
-				in_progress = true;
-				local current_pos = scroll.get_current_pos();
-				current_pos.y = scroll.calculate_new_position(step * value);
-				scroll.container.animate("position", current_pos, gui.EASING_OUTBACK, 0.4, 0, function()
-					scroll.update_position(current);
-					in_progress = false;
-				end);
+			on_input = function (action_id, action)
+				if action_id == hash("wheel_up") then
+					move(-1);
+				end
+				if action_id == hash("wheel_down") then
+					move(1);
+				end
 			end
 		}
 	end
@@ -69,20 +83,13 @@ function Scroll.new(mask_node_name, container_node_name, height)
 
 	function this.on_input(action_id, action)
 		if mask.is_pick(action) then
-			if action_id == hash("wheel_up") then
-				
-			end
-
-			if action_id == hash("wheel_down") then
-				
-			end
-			
-			if action_id == hash("touch") then
-				
-			end
+			this.strategy.on_input(action_id, action);
 		end
 	end
 
+
+	this.strategy = Scroll.strategies.step(this)
+	
 	return this;
 end
 
