@@ -1,5 +1,5 @@
 local GUI_Box = require "main.frameworck.ui.common.GUI_Box"
-Slider = {};
+local Slider = {};
 
 function Slider.new(main_node, thumb_name, line_name, text_name, callback)
 	local super = GUI_Box.new(main_node);
