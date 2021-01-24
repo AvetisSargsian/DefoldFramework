@@ -2,7 +2,7 @@ local GUI_Box = require "main.frameworck.ui.common.GUI_Box"
 local Scroll = {};
 
 Scroll.strategies = {
-	step = function(scroll)
+	drug = function(scroll)
 		local move = function(value)
 			if value ~= 0 then
 				local current = scroll.get_current_pos();
@@ -87,8 +87,7 @@ function Scroll.new(mask_node_name, container_node_name, height)
 		end
 	end
 
-
-	this.strategy = Scroll.strategies.step(this)
+	this.strategy = Scroll.strategies.drug(this);
 	
 	return this;
 end
