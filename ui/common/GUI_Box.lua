@@ -78,6 +78,10 @@ function GUI_Box.new(node_name)
 		gui.set_enabled(this.node, value);
 	end
 
+	function this.set_scale(value)
+		gui.set_scale(this.node, value);
+	end
+
 	function this.is_enabled()
 		return gui.is_enabled(this.node);
 	end
@@ -88,6 +92,10 @@ function GUI_Box.new(node_name)
 
 	function this.set_id(id)
 		gui.set_id(this.node, id);
+	end
+
+	function this.set_pivot(pivot)
+		gui.set_pivot(this.node, pivot);
 	end
 
 	function this.set_fill_angle(value)
