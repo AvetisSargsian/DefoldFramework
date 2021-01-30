@@ -14,7 +14,7 @@ Scroll.strategies = {
 		return {
 			on_input = function (action_id, action)
 				if action_id == hash("touch") then
-					move(action.dy);
+					if action then move(action.dy) end
 				end
 			end
 		}
@@ -117,16 +117,20 @@ function Scroll.new(mask_node_name, container_node_name, height)
 		on_pre_update_pos = cb;
 	end
 
-	function this.on_input(action_id, action)
-		if mask.is_pick(action) then
-			for _, str in ipairs(strategy) do
-				str.on_input(action_id, action);
-			end
+	function this.add_strategy(strat)
+		table.insert(strategy, strat);
+	end
+
+	function this.use(id, action)
+		for _, str in ipairs(strategy) do
+			str.on_input(id, action);
 		end
 	end
 
-	function this.add_strategy(strat)
-		table.insert(strategy, strat);
+	function this.on_input(action_id, action)
+		if mask.is_pick(action) then
+			this.use(action_id, action);
+		end
 	end
 	
 	return this;
