@@ -19,7 +19,7 @@ Scroll.strategies = {
 			end
 		}
 	end,
-	animation = function(scroll, step)
+	animation = function(scroll, step, easing, duration)
 		local in_progress = false;
 		local move = function(value)
 			if in_progress then return end
@@ -28,7 +28,7 @@ Scroll.strategies = {
 			local current_pos = scroll.get_current_pos();
 			current_pos.y = scroll.calculate_new_position(step * value);
 			scroll.call_on_pre_update_pos(current_pos);
-			scroll.container.animate("position", current_pos, gui.EASING_OUTBACK, 0.4, 0, function()
+			scroll.container.animate("position", current_pos, easing, duration, 0, function()
 				scroll.update_position(current_pos);
 				in_progress = false;
 			end);
