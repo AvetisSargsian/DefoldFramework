@@ -51,6 +51,7 @@ Scroll.strategies = {
 function Scroll.new(mask_node_name, container_node_name, height)
 	local this = {};
 
+	local strategy = {};
 	local on_pos_update = nil;
 	local on_pre_update_pos = nil;
 
@@ -118,11 +119,15 @@ function Scroll.new(mask_node_name, container_node_name, height)
 
 	function this.on_input(action_id, action)
 		if mask.is_pick(action) then
-			this.strategy.on_input(action_id, action);
+			for _, str in ipairs(strategy) do
+				str.on_input(action_id, action);
+			end
 		end
 	end
 
-	this.strategy = Scroll.strategies.drug(this);
+	function this.add_strategy(strat)
+		table.insert(strategy, strat);
+	end
 	
 	return this;
 end
