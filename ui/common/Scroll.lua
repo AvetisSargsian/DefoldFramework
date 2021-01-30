@@ -6,7 +6,7 @@ Scroll.strategies = {
 		local move = function(value)
 			if value ~= 0 then
 				local current = scroll.get_current_pos();
-				current.y = scroll.calculate_new_position(move);
+				current.y = scroll.calculate_new_position(value);
 				scroll.call_on_pre_update_pos(current);
 				scroll.update_position(current);
 			end
