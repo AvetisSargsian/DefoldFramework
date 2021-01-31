@@ -2,6 +2,19 @@ local GUI_Box = require "main.frameworck.ui.common.GUI_Box"
 local Scroll = {};
 
 Scroll.strategies = {
+	slider = function(scroll, slide)
+		slide.set_calback(function(ratio)
+			local current_pos = scroll.get_current_pos();
+			current_pos.y = scroll.calculate_new_position_with_ratio(ratio)
+			scroll.call_on_pre_update_pos(current_pos);
+			scroll.update_position(current_pos);
+		end);
+		
+		return {
+			direct_input = slide.on_input,
+			on_input = slide.on_input
+		}
+	end,
 	drug = function(scroll)
 		local move = function(value)
 			if value ~= 0 then
@@ -11,10 +24,18 @@ Scroll.strategies = {
 				scroll.update_position(current);
 			end
 		end
+
+		local call_move = function(action_id, action)
+			if action_id == hash("touch") then
+				if action then move(action.dy) end
+			end
+		end
+		
 		return {
-			on_input = function (action_id, action)
-				if action_id == hash("touch") then
-					if action then move(action.dy) end
+			direct_input = call_move,
+			on_input = function(action_id, action)
+				if scroll.get_mask_node().is_pick(action) then
+					call_move(action_id, action)
 				end
 			end
 		}
@@ -33,14 +54,21 @@ Scroll.strategies = {
 				in_progress = false;
 			end);
 		end
+
+		local call_move = function(action_id, action)
+			if action_id == hash("wheel_up") then
+				move(-1);
+			end
+			if action_id == hash("wheel_down") then
+				move(1);
+			end
+		end
 		
 		return {
-			on_input = function (action_id, action)
-				if action_id == hash("wheel_up") then
-					move(-1);
-				end
-				if action_id == hash("wheel_down") then
-					move(1);
+			direct_input = call_move,
+			on_input = function(action_id, action)
+				if scroll.get_mask_node().is_pick(action) then
+					call_move(action_id, action);
 				end
 			end
 		}
@@ -79,12 +107,22 @@ function Scroll.new(mask_node_name, container_node_name, height)
 		return end_pos_y == container_pos.y;
 	end
 
+	function this.get_ratio()
+		return container_pos.y / (start_pos_y + height);
+	end
+
+	function this.calculate_new_position_with_ratio(ratio)
+		local new_pos_y = start_pos_y + (height * ratio);
+		local dy = new_pos_y - container_pos.y;
+		return this.calculate_new_position(dy)
+	end
+
 	function this.calculate_new_position(dy)
 		local pos = container_pos.y + dy;
 		if pos < start_pos_y then 
 			return start_pos_y;
 		end
-		if pos + dy > end_pos_y then
+		if pos > end_pos_y then
 			return end_pos_y;
 		end
 		return pos;
@@ -107,14 +145,14 @@ function Scroll.new(mask_node_name, container_node_name, height)
 		on_pos_update = cb;
 	end
 
+	function this.set_pre_update_position_cb(cb)
+		on_pre_update_pos = cb;
+	end
+
 	function this.call_on_pre_update_pos(next_pos)
 		if on_pre_update_pos then
 			on_pre_update_pos(next_pos);
 		end
-	end
-
-	function this.set_pre_update_position_cb(cb)
-		on_pre_update_pos = cb;
 	end
 
 	function this.add_strategy(strat)
@@ -123,13 +161,13 @@ function Scroll.new(mask_node_name, container_node_name, height)
 
 	function this.use(id, action)
 		for _, str in ipairs(strategy) do
-			str.on_input(id, action);
+			str.direct_input(id, action);
 		end
 	end
 
 	function this.on_input(action_id, action)
-		if mask.is_pick(action) then
-			this.use(action_id, action);
+		for _, str in ipairs(strategy) do
+			str.on_input(action_id, action);
 		end
 	end
 	

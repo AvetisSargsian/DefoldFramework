@@ -13,23 +13,28 @@ function Slider.new(main_node, thumb_name, line_name, text_name, callback)
 
 	local thumb_local_position = thumb.get_position();
 	local thumb_global_position = thumb.get_screen_position();
-	local line_length = line.size.x;
+	local line_length = -line.size.y;
 	local _pressed = false;
 
-	local function set_pos(new_pos_x)
-		thumb_local_position.x = new_pos_x;
+	local function set_pos(new_pos_y)
+		thumb_local_position.y = new_pos_y;
 		thumb.set_position(thumb_local_position);
 		thumb_global_position = thumb.get_screen_position();
+		if callback then 
+			callback(thumb_local_position.y / line_length);
+		end
 	end
 
-	local function move_thumb(dx)
-		local new_pos_x = thumb_local_position.x + dx;
-		
-		if new_pos_x < 0 then new_pos_x = 0 end
-		if new_pos_x > line_length then new_pos_x = line_length end
-		
-		set_pos(new_pos_x);
+	local function move_thumb(dy)
+		local new_pos_y = thumb_local_position.y + dy;
+		if new_pos_y > 0 then new_pos_y = 0 end
+		if new_pos_y < line_length then new_pos_y = line_length end
+		set_pos(new_pos_y);
 	end
+
+	function this.set_calback(cb)
+		callback = cb
+	end 
 
 	function this.set_text(text)
 	end
@@ -38,27 +43,25 @@ function Slider.new(main_node, thumb_name, line_name, text_name, callback)
 		if value < 0 then value = 0 end
 		if value > 1 then value = 1 end
 		set_pos(value * line_length);
-		if callback then 
-			callback(value);
-		end
 	end
 
 	function this.on_input(action_id, action)
 		if action_id == GUI_Box.TOUCH then
 			if not this.is_enabled() then return end
-			if gui.pick_node(thumb.node, action.x, action.y) then 
+			
+			if thumb.is_pick(action) then 
 				if action.pressed and not _pressed then _pressed = true; end
 			end
 
 			if action.released and _pressed then 
 				_pressed = false; 
 				if callback then 
-					callback(thumb_local_position.x / line_length);
+					callback(thumb_local_position.y / line_length);
 				end
 			end
 
-			if _pressed and action.dx ~= 0 then
-				move_thumb(action.screen_x - thumb_global_position.x);
+			if _pressed and action.dy ~= 0 then
+				move_thumb(action.screen_y - thumb_global_position.y);
 			end
 		end
 	end
