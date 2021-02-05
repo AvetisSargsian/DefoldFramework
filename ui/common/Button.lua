@@ -17,6 +17,7 @@ function Button.new(node_name, layout_settings, callback)
 	
 	local super = GUI_Box.new(node_name);
 	local this = {};
+	this.protected = {};
 
 	--inheritance
 	setmetatable(this, super);
@@ -58,7 +59,7 @@ function Button.new(node_name, layout_settings, callback)
 		end
 	end
 
-	local function setOverAnim()
+	function this.protected.setOverAnim()
 		if hover_state and _state ~= hover_state then
 			gui.play_flipbook(this.node, hover_state);
 		end
@@ -75,7 +76,7 @@ function Button.new(node_name, layout_settings, callback)
 		_state = hover_state;
 	end
 
-	local function setPressedAnim()
+	function this.protected.setPressedAnim()
 		if down_state and _state ~= down_state then
 			gui.play_flipbook(this.node, down_state);
 		end
@@ -93,7 +94,7 @@ function Button.new(node_name, layout_settings, callback)
 		_state = down_state;
 	end
 
-	local function setReleasedAnim()
+	function this.protected.setReleasedAnim()
 		if up_state and _state ~= up_state then
 			gui.play_flipbook(this.node, up_state);
 		end
@@ -120,7 +121,7 @@ function Button.new(node_name, layout_settings, callback)
 	end
 
 	function this.release()
-		setReleasedAnim();
+		this.protected.setReleasedAnim();
 	end
 	
 	function this.on_input(action_id, action)
@@ -131,27 +132,28 @@ function Button.new(node_name, layout_settings, callback)
 			-- local over = gui.pick_node(this.node, action.x, action.y);
 			if over then 
 				if action.pressed and not _pressed then
-					setPressedAnim(this.node);
+					this.protected.setPressedAnim(this.node);
 				elseif action.released and _pressed then
-					setReleasedAnim();
+					this.protected.setReleasedAnim();
 					if over and _callback then 
 						_callback(this); 
 					end
 				end
 				return;
 			elseif _pressed then
-				setReleasedAnim(this.node);
+				this.protected.setReleasedAnim(this.node);
 				return;
 			end
 		end
 		if over and not _pressed and not _is_over then 
-			setOverAnim(this.node);
+			this.protected.setOverAnim();
 		elseif not over and not _pressed and _is_over then
-			setReleasedAnim();
+			this.protected.setReleasedAnim();
 		end
 	end
 
-	setReleasedAnim();
+	this.protected.setReleasedAnim();
+	
 	return this;
 end
 
