@@ -17,7 +17,7 @@ function Slider.new(main_node, thumb_name, line_name, text_name, callback)
 
 	local function run_callback()
 		if callback then 
-			callback(thumb_local_position.y / line_length);
+			callback(thumb_local_position.x / line_length);
 		end
 	end
 
@@ -28,10 +28,8 @@ function Slider.new(main_node, thumb_name, line_name, text_name, callback)
 
 	local function move_thumb(dx)
 		local new_pos_x = thumb_local_position.x + dx;
-		
 		if new_pos_x < 0 then new_pos_x = 0 end
 		if new_pos_x > line_length then new_pos_x = line_length end
-		
 		set_pos(new_pos_x);
 		run_callback()
 	end
