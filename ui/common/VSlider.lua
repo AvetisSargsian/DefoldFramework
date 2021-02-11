@@ -12,7 +12,6 @@ function Slider.new(main_node, thumb_name, line_name, text_name, callback)
 	local line = GUI_Box.new(line_name);
 
 	local thumb_local_position = thumb.get_position();
-	local thumb_global_position = thumb.get_screen_position();
 	local line_length = -line.size.y;
 	local _pressed = false;
 
@@ -25,7 +24,6 @@ function Slider.new(main_node, thumb_name, line_name, text_name, callback)
 	local function set_pos(new_pos_y)
 		thumb_local_position.y = new_pos_y;
 		thumb.set_position(thumb_local_position);
-		thumb_global_position = thumb.get_screen_position();
 	end
 
 	local function move_thumb(dy)
@@ -64,7 +62,7 @@ function Slider.new(main_node, thumb_name, line_name, text_name, callback)
 			end
 
 			if _pressed and action.dy ~= 0 then
-				move_thumb(action.screen_y - thumb_global_position.y);
+				move_thumb(action.screen_y - thumb.get_screen_position().y);
 			end
 		end
 	end

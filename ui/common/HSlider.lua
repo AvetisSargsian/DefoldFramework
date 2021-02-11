@@ -12,17 +12,18 @@ function Slider.new(main_node, thumb_name, line_name, text_name, callback)
 	local line = GUI_Box.new(line_name);
 
 	local thumb_local_position = thumb.get_position();
-	local thumb_global_position = thumb.get_screen_position();
 	local line_length = line.size.x;
 	local _pressed = false;
+
+	local function run_callback()
+		if callback then 
+			callback(thumb_local_position.y / line_length);
+		end
+	end
 
 	local function set_pos(new_pos_x)
 		thumb_local_position.x = new_pos_x;
 		thumb.set_position(thumb_local_position);
-		thumb_global_position = thumb.get_screen_position();
-		if callback then 
-			callback(thumb_local_position.y / line_length);
-		end
 	end
 
 	local function move_thumb(dx)
@@ -32,6 +33,7 @@ function Slider.new(main_node, thumb_name, line_name, text_name, callback)
 		if new_pos_x > line_length then new_pos_x = line_length end
 		
 		set_pos(new_pos_x);
+		run_callback()
 	end
 
 	function this.set_calback(cb)
@@ -41,13 +43,11 @@ function Slider.new(main_node, thumb_name, line_name, text_name, callback)
 	function this.set_text(text)
 	end
 
-	function this.set_ratio(value)
+	function this.set_ratio(value, with_callback)
 		if value < 0 then value = 0 end
 		if value > 1 then value = 1 end
 		set_pos(value * line_length);
-		if callback then 
-			callback(value);
-		end
+		if with_callback then run_callback() end
 	end
 
 	function this.on_input(action_id, action)
@@ -60,13 +60,11 @@ function Slider.new(main_node, thumb_name, line_name, text_name, callback)
 
 			if action.released and _pressed then 
 				_pressed = false; 
-				if callback then 
-					callback(thumb_local_position.x / line_length);
-				end
+				run_callback();
 			end
 
 			if _pressed and action.dx ~= 0 then
-				move_thumb(action.screen_x - thumb_global_position.x);
+				move_thumb(action.screen_x - thumb.get_screen_position().x);
 			end
 		end
 	end

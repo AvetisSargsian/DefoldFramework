@@ -5,9 +5,10 @@ GestureHandler.DOWN = "GestureHandler.DOWN";
 GestureHandler.RIGHT = "GestureHandler.RIGHT";
 GestureHandler.LEFT = "GestureHandler.LEFT";
 
-function GestureHandler.new(dx, dy)
+function GestureHandler.new(dx, dy, host_node)
 	local this = {}
 
+	host_node = host_node or { is_pick = function() return true end }
 	local on_swap_up = nil;
 	local on_swap_down = nil;
 	local on_swap_right = nil;
@@ -43,9 +44,12 @@ function GestureHandler.new(dx, dy)
 	function this.on_input(action_id, action)
 		local dif_x = 0;
 		local dif_y = 0;
+
 		
-		if action.pressed and not touch_start then 
-			touch_start = {x = action.x, y = action.y} 
+		if host_node.is_pick(action) then
+			if action.pressed and not touch_start then 
+				touch_start = {x = action.x, y = action.y} 
+			end	
 		end
 		
 		if action.released and touch_start then 
