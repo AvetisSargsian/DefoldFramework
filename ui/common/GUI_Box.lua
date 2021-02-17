@@ -112,6 +112,10 @@ function GUI_Box.new(node_name)
 		return gui.pick_node(this.node, action.x, action.y);
 	end
 
+	function this.set_rotation(rotation)
+		gui.set_rotation(this.node, rotation)
+	end
+
 	function this.on_input(action_id, action)
 	end
 
