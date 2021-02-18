@@ -1,6 +1,9 @@
 local GUI_Box = require "main.frameworck.ui.common.GUI_Box"
 local Scroll = {};
 
+-- UNISEX
+
+
 Scroll.strategies = {
 	slider = function(scroll, slide)
 		slide.set_calback(function(ratio)

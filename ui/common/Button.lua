@@ -14,7 +14,6 @@ function Button.on_input(store, action_id, action)
 end
 
 function Button.new(node_name, layout_settings, callback)
-	
 	local super = GUI_Box.new(node_name);
 	local this = {};
 	this.protected = {};
