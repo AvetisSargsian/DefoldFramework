@@ -3,9 +3,10 @@ local Scroll = {};
 
 Scroll.strategies = {
 	slider = function(scroll, slide)
+		local dir = scroll.direction()
 		slide.set_calback(function(ratio)
 			local current_pos = scroll.get_current_pos();
-			current_pos.y = scroll.calculate_new_position_with_ratio(ratio)
+			current_pos[dir] = scroll.calculate_new_position_with_ratio(ratio)
 			scroll.call_on_pre_update_pos(current_pos);
 			scroll.update_position(current_pos);
 		end);
@@ -16,10 +17,12 @@ Scroll.strategies = {
 		}
 	end,
 	drug = function(scroll)
+		local dir = scroll.direction()
+		local action_dif = dir == "x" and "dx" or "dy"
 		local move = function(value)
 			if value ~= 0 then
 				local current = scroll.get_current_pos();
-				current.y = scroll.calculate_new_position(value);
+				current[dir] = scroll.calculate_new_position(value);
 				scroll.call_on_pre_update_pos(current);
 				scroll.update_position(current);
 			end
@@ -27,7 +30,7 @@ Scroll.strategies = {
 
 		local call_move = function(action_id, action)
 			if action_id == hash("touch") then
-				if action then move(action.dy) end
+				if action then move(action[action_dif]) end
 			end
 		end
 		
@@ -42,12 +45,13 @@ Scroll.strategies = {
 	end,
 	animation = function(scroll, step, easing, duration)
 		local in_progress = false;
+		local dir = scroll.direction();
 		local move = function(value)
 			if in_progress then return end
 			value = value > 0 and 1 or -1;
 			in_progress = true;
 			local current_pos = scroll.get_current_pos();
-			current_pos.y = scroll.calculate_new_position(step * value);
+			current_pos[dir] = scroll.calculate_new_position(step * value);
 			scroll.call_on_pre_update_pos(current_pos);
 			scroll.container.animate("position", current_pos, easing, duration, 0, function()
 				scroll.update_position(current_pos);
@@ -75,21 +79,30 @@ Scroll.strategies = {
 	end
 }
 
+Scroll.directions = {
+	horizontal = "x",
+	vertical = "y"
+}
 
-function Scroll.new(mask_node_name, container_node_name, height)
+function Scroll.new(mask_node_name, container_node_name, height, direction)
 	local this = {};
 
 	local strategy = {};
 	local on_pos_update = nil;
 	local on_pre_update_pos = nil;
+	local direct = direction or Scroll.directions.vertical;
 
 	local mask = GUI_Box.new(mask_node_name);
 	local scroll_container = GUI_Box.new(container_node_name);
 	this.container = scroll_container;
 
 	local container_pos = scroll_container.get_position();
-	local start_pos_y = container_pos.y;
-	local end_pos_y = start_pos_y + height;
+	local start_pos = container_pos[direct];
+	local end_pos = start_pos + height;
+
+	function this.direction()
+		return direct
+	end
 
 	function this.get_current_pos()
 		return container_pos;
@@ -100,30 +113,30 @@ function Scroll.new(mask_node_name, container_node_name, height)
 	end
 
 	function this.is_on_top()
-		return start_pos_y == container_pos.y;
+		return start_pos == container_pos[direct];
 	end
 
 	function this.is_on_bottom()
-		return end_pos_y == container_pos.y;
+		return end_pos == container_pos[direct];
 	end
 
 	function this.get_ratio()
-		return container_pos.y / (start_pos_y + height);
+		return container_pos[direct] / (start_pos + height);
 	end
 
 	function this.calculate_new_position_with_ratio(ratio)
-		local new_pos_y = start_pos_y + (height * ratio);
-		local dy = new_pos_y - container_pos.y;
-		return this.calculate_new_position(dy)
+		local new_pos = start_pos + (height * ratio);
+		local dif = new_pos - container_pos[direct];
+		return this.calculate_new_position(dif)
 	end
 
-	function this.calculate_new_position(dy)
-		local pos = container_pos.y + dy;
-		if pos < start_pos_y then 
-			return start_pos_y;
+	function this.calculate_new_position(dif)
+		local pos = container_pos[direct] + dif;
+		if pos < start_pos then 
+			return start_pos;
 		end
-		if pos > end_pos_y then
-			return end_pos_y;
+		if pos > end_pos then
+			return end_pos;
 		end
 		return pos;
 	end
