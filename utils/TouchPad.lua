@@ -2,7 +2,16 @@ local TouchPad = {}
 
 local TAP_THRESHOLD = 20;
 local DOUBLE_TAP_INTERVAL = 0.3;
-local DRAG_THRESHOLD = 33;
+TouchPad.DRAG_THRESHOLD = 33;
+
+function TouchPad.set_sensitivity(value)
+	local min_sensitivity = 33;
+	local max_sensitivity = 100;
+	TouchPad.DRAG_THRESHOLD = max_sensitivity - value * 100;
+	if TouchPad.DRAG_THRESHOLD < min_sensitivity then
+		TouchPad.DRAG_THRESHOLD = min_sensitivity;
+	end
+end
 
 function TouchPad.new()
 	local this = {}
@@ -46,14 +55,14 @@ function TouchPad.new()
 		end
 
 		if touch_start then
-			if math.abs(action.x - touch_start.x) >= DRAG_THRESHOLD then
+			if math.abs(action.x - touch_start.x) >= TouchPad.DRAG_THRESHOLD then
 				this.state.drag_x = action.x - touch_start.x > 0 and 1 or -1;
 				touch_start.x = action.x;
 			else
 				this.state.drag_x = 0;
 			end
 
-			if math.abs(action.y - touch_start.y) >= DRAG_THRESHOLD then
+			if math.abs(action.y - touch_start.y) >= TouchPad.DRAG_THRESHOLD then
 				this.state.drag_y = action.y - touch_start.y > 0 and 1 or -1;
 				touch_start.y = action.y;
 			else
