@@ -1,12 +1,12 @@
 
 local Timer = {}
 
-function Timer.new(node)
+function Timer.new(node, start, callback)
 
 	local this = {}
 	this.node = node;
 
-	local start_time = 0;
+	local start_time = start + os.time() or 0;
 	local minutes = 0;
 	local seconds = 0;
 	local hours = 0;
@@ -23,11 +23,22 @@ function Timer.new(node)
 
 	function this.enterFrame(dt)
 		if not isRunning then return; end
+
+		local timePassed
 		
-		local timePassed = os.time() - start_time;
+		if start then
+			timePassed = start_time - os.time();
+		else
+			timePassed = os.time() - start_time;
+		end
+		
 		seconds = math.floor(timePassed % 60);
 		minutes = math.floor((timePassed / 60) % 60);
 		hours = math.floor((timePassed / 3600) % 24);
+
+		if timePassed <= 0 then
+			callback();
+		end
 
 		update_node();
 	end	
@@ -46,7 +57,9 @@ function Timer.new(node)
 
 	function this.start(self)
 		isRunning = true;
-		start_time = os.time();
+		if not start then
+			start_time = os.time();
+		end
 	end
 
 	function this.stop(self)
