@@ -13,6 +13,10 @@ function Text_Box.new(node_name)
 		gui.set_text(this.node, text);
 	end
 
+	function this.set_font(font_id)
+		gui.set_font(this.node, font_id);
+	end
+
 	return this;
 end
 
