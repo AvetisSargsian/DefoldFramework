@@ -27,7 +27,7 @@ function Popup.new(node_name, show_position, hide_position)
 
 	function this.hide(callback)
 		if not is_visible then return end
-		this.animate("position", hide_position, gui.EASING_INOUTBACK, 0.5, 0, function() 
+		this.animate("position", hide_position, gui.EASING_INBACK, 0.5, 0, function() 
 			this.set_enabled(false);
 			is_visible = false;
 			if callback then callback(this); end

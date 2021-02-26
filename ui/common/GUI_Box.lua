@@ -108,6 +108,10 @@ function GUI_Box.new(node_name)
 		gui.animate(this.node, property, to, easing, duration, delay, complete_function, playback);
 	end
 
+	function this.cancel_animation(property)
+		gui.cancel_animation(this.node, property);
+	end
+
 	function this.is_pick(action)
 		return gui.pick_node(this.node, action.x, action.y);
 	end
