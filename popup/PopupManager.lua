@@ -12,19 +12,23 @@ function PopupManager.open_popup(id, data)
 	local collection_popup = collectionfactory.create(popups_factorys[id]);
 	local col_pop_ui = collection_popup[hash("/popup")];
 	local url = msg.url(nil, col_pop_ui, "ui");
-	open_popups[id] = url;
+	open_popups[id] = {url = url, go = collection_popup};
 	msg.post(url, "open_popup", data);
 end
 
 function PopupManager.close_popup(id)
 	if not open_popups[id] then return end
-	msg.post(open_popups[id], "close_popup");
+	msg.post(open_popups[id].url, "close_popup");
 	collectionfactory.unload(popups_factorys[id])
-	open_popups[id] = nil;
+	open_popups[id].url = nil;
+end
+
+function PopupManager.get_go(id)
+	return open_popups[id].go;
 end
 
 function PopupManager.is_open(id)
-	if open_popups[id] then 
+	if open_popups[id] and open_popups[id].url then 
 		return true;
 	else
 		return false;

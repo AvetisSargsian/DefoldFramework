@@ -54,7 +54,8 @@ function Button.new(node_name, layout_settings, callback)
 
 	local function play_sound()
 		if click_sound then
-			SoundManager.play_sound(click_sound);
+			-- SoundManager.play_sound(click_sound);
+			msg.post("main:/sounds#GameSoundsController", "play_sound", {sound_id = click_sound});
 		end
 	end
 
