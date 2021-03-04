@@ -27,7 +27,7 @@ function SoundManager.set_group_gain(group, value)
 	sound.set_group_gain(group, value)
 end
 
-function SoundManager.play_sound(sound_name, prop, callback)
+function SoundManager.sound_play(sound_name, prop, callback)
 	if not _enabled then return nil end
 	local id = sound.play(sound_name, prop, function(self, message_id, message, sender)
 		if message_id == SOUND_DONE then

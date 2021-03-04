@@ -52,10 +52,9 @@ function Button.new(node_name, layout_settings, callback)
 	local _pressed = false;
 	local _is_over = false;
 
-	local function play_sound()
+	local function sound_play()
 		if click_sound then
-			-- SoundManager.play_sound(click_sound);
-			msg.post("main:/sounds#GameSoundsController", "play_sound", {sound_id = click_sound});
+			msg.post("main:/sounds#GameSoundsController", "sound_play", {sound_id = click_sound});
 		end
 	end
 
@@ -89,7 +88,7 @@ function Button.new(node_name, layout_settings, callback)
 			this.animate("color", pressed_color, gui.EASING_LINEAR, duration);
 		end
 		
-		play_sound();
+		sound_play();
 		_pressed = true;
 		_state = down_state;
 	end
