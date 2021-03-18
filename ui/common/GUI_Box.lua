@@ -82,6 +82,10 @@ function GUI_Box.new(node_name)
 		gui.set_scale(this.node, value);
 	end
 
+	function this.set_size(size)
+		gui.set_size(this.node, size);
+	end
+
 	function this.is_enabled()
 		return gui.is_enabled(this.node);
 	end
