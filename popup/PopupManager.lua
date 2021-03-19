@@ -3,6 +3,8 @@ local PopupManager = {}
 local popups_factorys = {};
 local open_popups = nil;
 local queue = {};
+local OPEN_POPUP = hash("open_popup");
+local CLOSE_POPUP = hash("close_popup");
 
 function PopupManager.register_popup(id, factory)
 	popups_factorys[id] = factory;
@@ -15,7 +17,7 @@ local function open_popup(id, data)
 	local url = msg.url(nil, col_pop_ui, "ui");
 	open_popups = {id = id, url = url, go = collection_popup};
 	table.remove(queue, 1);
-	msg.post(url, "open_popup", data);
+	msg.post(url, OPEN_POPUP, data);
 end
 
 local function check_queue()
@@ -41,7 +43,7 @@ end
 
 function PopupManager.close_popup(id, data)
 	if not open_popups or open_popups.id ~= id then return end
-	msg.post(open_popups.url, "close_popup", {data = data});
+	msg.post(open_popups.url, CLOSE_POPUP, {data = data});
 	collectionfactory.unload(popups_factorys[id])
 end
 

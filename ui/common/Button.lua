@@ -2,6 +2,9 @@ local GUI_Box 	= require "main.frameworck.ui.common.GUI_Box"
 local SoundManager 	= require "main.frameworck.sound.SoundManager"
 local Button = {};
 
+local GAME_SOUNDS_CONTROLLER = msg.url("main:/sounds#GameSoundsController");
+local SOUND_PLAY = hash("sound_play");
+
 -- if uncomment code below, Button will inherit all GUI_Box properties and methods
 -- setmetatable(Button, GUI_Box);
 -- GUI_Box.__index = GUI_Box
@@ -44,7 +47,7 @@ function Button.new(node_name, layout_settings, callback)
 	local _callback = callback;
 	local click_sound = nil;
 	if settings.sound then
-		click_sound = sound_go .. settings.sound;
+		click_sound = msg.url(sound_go .. settings.sound);
 	end
 	
 	local _state = nil;
@@ -54,7 +57,7 @@ function Button.new(node_name, layout_settings, callback)
 
 	local function sound_play()
 		if click_sound then
-			msg.post("main:/sounds#GameSoundsController", "sound_play", {sound_id = click_sound});
+			msg.post(GAME_SOUNDS_CONTROLLER, SOUND_PLAY, {sound_id = click_sound});
 		end
 	end
 
