@@ -2,9 +2,7 @@ local Utils = {};
 
 local store = {};
 
-function Utils.set_time_out(time, callBack, ...)
-    table.insert(store, {time = time, callBack = callBack, args={...}})
-end
+
 
 function Utils.run_coroutine(func, ...)
     local co = coroutine.create(func);
@@ -23,6 +21,10 @@ function Utils.pouse_coroutine(time, data)
         end
         coroutine.yield(data);
     end
+end
+
+function Utils.set_time_out(time, callBack, ...)
+    table.insert(store, {time = time, callBack = callBack, args={...}})
 end
 
 function Utils.update(dt)
