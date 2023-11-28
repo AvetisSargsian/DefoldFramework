@@ -1,34 +1,62 @@
 local PopupManager = {}
 
 local popups_factorys = {};
-local open_popups = {};
+local open_popups = nil;
+local queue = {};
+local OPEN_POPUP = hash("open_popup");
+local CLOSE_POPUP = hash("close_popup");
 
 function PopupManager.register_popup(id, factory)
 	popups_factorys[id] = factory;
 end
 
-function PopupManager.open_popup(id, data)
+local function open_popup(id, data)
 	if not popups_factorys[id] then return end
 	local collection_popup = collectionfactory.create(popups_factorys[id]);
 	local col_pop_ui = collection_popup[hash("/popup")];
 	local url = msg.url(nil, col_pop_ui, "ui");
-	open_popups[id] = {url = url, go = collection_popup};
-	msg.post(url, "open_popup", data);
+	open_popups = {id = id, url = url, go = collection_popup};
+	table.remove(queue, 1);
+	msg.post(url, OPEN_POPUP, data);
 end
 
-function PopupManager.close_popup(id)
-	if not open_popups[id] then return end
-	msg.post(open_popups[id].url, "close_popup");
+local function check_queue()
+	if #queue > 0 and not open_popups then
+		open_popup(queue[1].id, queue[1].data);
+	end
+end
+
+function PopupManager.add_first(id, data)
+	table.insert(queue, 1, {id = id, data = data})
+	check_queue();
+end
+
+function PopupManager.add_last(id, data)
+	table.insert(queue, {id = id, data = data})
+	check_queue();
+end
+
+function PopupManager.update_queue()
+	open_popups = nil;
+	check_queue();
+end
+
+function PopupManager.close_popup(id, data)
+	if not open_popups or open_popups.id ~= id then return end
+	msg.post(open_popups.url, CLOSE_POPUP, {data = data});
 	collectionfactory.unload(popups_factorys[id])
-	open_popups[id].url = nil;
 end
 
-function PopupManager.get_go(id)
-	return open_popups[id].go;
+function PopupManager.get_go()
+	return open_popups.go;
+end
+
+function PopupManager.get_url()
+	return open_popups.url;
 end
 
 function PopupManager.is_open(id)
-	if open_popups[id] and open_popups[id].url then 
+	if open_popups and open_popups.id == id then 
 		return true;
 	else
 		return false;

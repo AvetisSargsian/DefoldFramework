@@ -49,7 +49,6 @@ end
 
 function SoundManager.stop_sound(sound_name)
 	sound.stop(sound_name)
-	
 end
 
 return SoundManager;
