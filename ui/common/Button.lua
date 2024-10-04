@@ -134,7 +134,7 @@ function Button.new(node_name, layout_settings, callback)
 			-- local over = gui.pick_node(this.node, action.x, action.y);
 			if over then 
 				if action.pressed and not _pressed then
-					this.protected.setPressedAnim(this.node);
+					this.protected.setPressedAnim();
 				elseif action.released and _pressed then
 					this.protected.setReleasedAnim();
 					if over and _callback then 
@@ -143,7 +143,7 @@ function Button.new(node_name, layout_settings, callback)
 				end
 				return;
 			elseif _pressed then
-				this.protected.setReleasedAnim(this.node);
+				this.protected.setReleasedAnim();
 				return;
 			end
 		end
