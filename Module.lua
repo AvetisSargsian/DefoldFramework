@@ -49,7 +49,7 @@ function Module.new()
 			start_coroutine(co);
 		else
 			--print("Module:: run branch:: " .. id);
-			command_runner.run(actions[id], message, thread_id);
+			command_runner.run(actions[id], message, nil);
 			--print("Module:: end branch:: " .. id);
 		end
 	end
@@ -88,7 +88,7 @@ end
 setmetatable(Module, {
 	-- this method used when table used as function
 	__call = function(t, ...)
-		return Module.new(...)
+		return Module.new()
 	end
 })
 
