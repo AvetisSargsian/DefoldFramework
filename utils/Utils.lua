@@ -3,7 +3,6 @@ local Utils = {};
 local store = {};
 
 
-
 function Utils.run_coroutine(func, ...)
     local co = coroutine.create(func);
     local ok , err = coroutine.resume(co, ...);
@@ -11,6 +10,14 @@ function Utils.run_coroutine(func, ...)
         error("Error in co-routine: " .. err);
     end
     return co;
+end
+
+function Utils.yield_coroutine(data)
+    coroutine.yield(data);
+end
+
+function Utils.resume_coroutine(co)
+    coroutine.resume(co);
 end
 
 function Utils.pouse_coroutine(time, data)
@@ -22,6 +29,8 @@ function Utils.pouse_coroutine(time, data)
         coroutine.yield(data);
     end
 end
+
+
 
 function Utils.set_time_out(time, callBack, ...)
     table.insert(store, {time = time, callBack = callBack, args={...}})
